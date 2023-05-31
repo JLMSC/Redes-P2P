@@ -1,0 +1,22 @@
+"""Pacote responsável pela junção das exceções
+customizadas."""
+
+# Exceções customizadas.
+from .missing_input_file import MissingInputFile
+from .too_many_neighbors import TooManyNeighbors
+from .non_json_file_found import NonJSONFileFound
+from .not_enough_neighbors import NotEnoughNeighbors
+from .missing_node_resources import MissingNodeResources
+from .missing_node_neighbors import MissingNodeNeighbors
+from .invalid_option_in_input_file import InvalidOptionInInputFile
+
+# Indica quais exceções estarão disponíveis para uso no pacote.
+__all__: list[str] = [
+    'MissingInputFile',
+    'TooManyNeighbors',
+    'NonJSONFileFound',
+    'NotEnoughNeighbors',
+    'MissingNodeResources',
+    'MissingNodeNeighbors',
+    'InvalidOptionInInputFile',
+]
