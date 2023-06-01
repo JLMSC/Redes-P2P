@@ -39,15 +39,15 @@ def read_json_file(file_path: str = "") -> Any:
     # Lança uma exceção se o arquivo de entrada não existir.
     if not isfile(path=file_path):
         raise MissingInputFile(
-            'O arquivo de entrada não foi encontrado ' +\
-            f'no diretório {file_path}'
+            'O arquivo de entrada não foi encontrado' +\
+            f' no diretório {file_path}'
         )
 
     # Lança uma exceção se o arquivo não for .json.
     if not file_path.endswith('.json'):
         raise NonJSONFileFound(
-            f'O arquivo de entrada {file_path} encontrado ' +\
-            'não é .json' 
+            f'O arquivo de entrada {file_path}' +\
+            ' encontrado não é .json' 
         )
 
     # Lazy Import.
