@@ -4,5 +4,4 @@
 class NotEnoughNeighbors(Exception):
     """Exceção lançada quando a quantidade de
     vizinhos de um nó, em uma topologia, é 
-    insuficiente.
-    """
+    insuficiente."""
