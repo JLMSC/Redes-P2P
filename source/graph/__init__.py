@@ -1,5 +1,4 @@
-"""Pacote responsável pela junção de topologias, nós e
-buscas: informada e passeio aleatório."""
+"""Pacote responsável pela criação de topologias e nós;"""
 
 from .network import Network
 

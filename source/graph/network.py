@@ -4,6 +4,9 @@ criação de uma topologia."""
 from random import choice
 from typing import Any, Union
 
+# Buscas.
+from searchs import execute
+
 # Exceções customizadas.
 from exceptions import NodeIDNotFound
 from exceptions import TooManyNeighbors
@@ -261,3 +264,21 @@ class Network:
             if node.node_id == node_id:
                 return node
         return None
+
+    def run_search(self) -> None:
+        """Executa algum algoritmo de busca na topologia atual."""
+        print('Algoritmos de busca disponíveis:' +\
+              '\n\t1- \'flooding\', \'informed_flooding\'' +\
+              '\n\t2- \'random_walk\', \'informed_random_walk\'' +\
+              '\n')
+        # O algoritmo de busca a ser usado.
+        algorithm: str = input('[ALGORITMO?] Informe o NOME algoritmo: ')
+        # O nó de partida.
+        node: Node = self.find_node_by_id(
+            node_id=input('[NÓ?] Informe o NÓ de partida: ')
+        )
+        # O recurso a ser buscado.
+        resource: str = input('[RECURSO?] Informe o RECURSO a ser buscado: ')
+        # O TTL.
+        ttl: int = input('(OPCIONAL) Informe o Time To Live (TTL): ')
+        execute(algorithm=algorithm, node=node, resource=resource, ttl=ttl)
