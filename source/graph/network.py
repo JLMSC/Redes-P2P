@@ -1,6 +1,7 @@
 """Arquivo responsável pela definição e 
 criação de uma topologia."""
 
+from random import choice
 from typing import Any, Union
 
 # Exceções customizadas.
@@ -9,6 +10,7 @@ from exceptions import TooManyNeighbors
 from exceptions import NotEnoughNeighbors
 from exceptions import MissingNodeResources
 from exceptions import MissingNodeNeighbors
+from exceptions import NetworkIsPartitioned
 
 class Node:
     """Representa um nó em uma topologia."""
@@ -67,8 +69,54 @@ class Network:
                 )
             )
 
-    # TODO: Doc
+    def is_partitioned(self) -> bool:
+        """Verifica se a topologia atual está particionada.
+
+        Basicamente realiza um Breadth-First Search (BFS), em
+        um nó qualquer da topologia, se a partir deste nó, for
+        possível visitar todos os outros nós, a topologia não
+        está particionada.
+
+        Returns
+        -------
+        bool
+            Verdadeiro se a topologia estiver particionada,
+            Falso caso contrário.
+        """
+        # Escolhe um nó inicial qualquer.
+        start_node: Node = choice(seq=list(self.nodes))
+        # Os nós que já foram visitados.
+        visited_nodes: set[Node] = set()
+
+        queue = [start_node]
+        while queue:
+            # Remove o nó atual da fila e adiciona-o aos visitados.
+            current_node = queue.pop(0)
+            visited_nodes.add(current_node)
+
+            # Visita os nós vizinhos do nó atual se eles não foram visitados.
+            node_neighbors = current_node.neighbors
+            for neighbor in node_neighbors:
+                if neighbor not in visited_nodes:
+                    queue.append(neighbor)
+
+        return len(visited_nodes) != self.num_nodes
+
     def check_network(self) -> None:
+        """Faz a checagem da topologia, verificando se
+        está bem estruturada.
+
+        Raises
+        ------
+        MissingNodeNeighbors
+            Caso algum nó não tenha vizinhos.
+        NotEnoughNeighbors
+            Caso algum nó não tenha vizinhos o suficiente.
+        TooManyNeighbors
+            Caso algum nó tenha muitos vizinhos.
+        NetworkIsPartitioned
+            Caso a topologia esteja particionada.
+        """
         for node in self.nodes:
             # Lança uma exceção se não houver vizinhos para o nó atual.
             if len(node.neighbors) == 0:
@@ -97,7 +145,12 @@ class Network:
                     f' é de {self.max_neighbors}.'
                 )
 
-            # TODO: Validação para qntd. mínima e máxima de recursos ?
+            # Lança uma exceção se a topologia conter particionamento.
+            if self.is_partitioned():
+                raise NetworkIsPartitioned(
+                    'Durante a checagem da topologia,' +\
+                    ' foi notado a existência de particionamento em algum nó.'
+                )
 
     def add_node(self, node_id: int) -> None:
         """Adiciona um único nó à topologia."""
