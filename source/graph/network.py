@@ -20,11 +20,68 @@ class Node:
     node_id: str
     resources: set[str]
     neighbors: set['Node']
+    cache: dict['Node', set[str]]
 
     def __init__(self, node_id: str) -> None:
         self.node_id = node_id
         self.resources = set()
         self.neighbors = set()
+        self.cache = {}
+
+    def add_cache(self, node: 'Node', resource: str) -> None:
+        """Atualiza, ou cria, o cache deste nó.
+
+        O cache serve para armazenar informações
+        relacionadas aos recursos de outros nós,
+        facilitando, então, a busca futura por
+        recursos.
+
+        Parameters
+        ----------
+        node : str
+            O nó que contém determinado recurso.
+        resource : str
+            O recurso que determinado nó contém.
+        """
+        self.cache.setdefault(node, set())\
+        .add(resource)
+
+    def know_resource(self, resource: str) -> bool:
+        """Verifica se este nó contém alguma
+        informação em seu cache sobre determinado
+        recurso.
+
+        Parameters
+        ----------
+        resource : str
+            Um recurso qualquer.
+
+        Returns
+        -------
+        bool
+            Se este nó tem alguma informação, em seu cache,
+            sobre determinado recurso.
+        """
+        return any(
+            resource in known_resources
+            for known_resources in self.cache.values()
+        )
+
+    def get_node_by_resource(self, resource: str) -> Union['Node', None]:
+        """Informa qual nó contém determinado recurso,
+        caso este nó tenha alguma informação sobre o
+        recurso.
+
+        Returns
+        -------
+        Union['Node', None]
+            O nó, caso tenha informações sobre, ou nada.
+        """
+        for node, known_resources in self.cache.items():
+            if resource in known_resources:
+                return node
+        return None
+
 
 class Network:
     """Representa uma topologia de um rede P2P."""
@@ -247,7 +304,7 @@ class Network:
                 ' não foi encontrado na topologia.'
             )
 
-    def find_node_by_id(self, node_id: str) -> Union[Node, None]:
+    def find_node_by_id(self, node_id: str) -> Node:
         """Busca por um nó, em uma topologia, pelo seu id.
 
         Parameters
@@ -257,13 +314,24 @@ class Network:
 
         Returns
         -------
-        Union[Node, None]
-            O nó, caso seja encontrado, ou nada.
+        Node
+            O nó encontrado pelo id fornecido.
+
+        Raises
+        ------
+        NodeIDNotFound
+            Caso o nó não seja encontrado pelo id fornecido.
         """
         for node in self.nodes:
             if node.node_id == node_id:
                 return node
-        return None
+
+        # Lança uma exceção se o nó não for encontrado, pelo id fornecido,
+        # na topologia.
+        raise NodeIDNotFound(
+            f'O nó de id {node_id},' +\
+            ' não foi encontrado na topologia.'
+        )
 
     def run_search(self) -> None:
         """Executa algum algoritmo de busca na topologia atual."""
@@ -280,5 +348,5 @@ class Network:
         # O recurso a ser buscado.
         resource: str = input('[RECURSO?] Informe o RECURSO a ser buscado: ')
         # O TTL.
-        ttl: int = input('(OPCIONAL) Informe o Time To Live (TTL): ')
+        ttl: str = input('(OPCIONAL) Informe o Time To Live (TTL): ')
         execute(algorithm=algorithm, node=node, resource=resource, ttl=ttl)
