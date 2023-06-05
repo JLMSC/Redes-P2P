@@ -1,6 +1,7 @@
 """Arquivo responsável pela execução, com métricas,
 de um algoritmo de busca."""
 
+from time import time
 from functools import wraps
 from typing import Callable
 
@@ -24,14 +25,37 @@ AVAILABLE_SEARCH_ALGORITHMS: dict[str, Callable] = {
     'informed_random_walk': informed_random_walk
 }
 
-# TODO: Implementar o wrapper.
 def metrics(func: Callable) -> Callable:
+    """'Wrapper' responsável pelo cálculo do tempo
+    de execução de algum algoritmo de busca.
+
+    Parameters
+    ----------
+    func : Callable
+        O algoritmo de busca a ser executado.
+
+    Returns
+    -------
+    Callable
+        O método 'wrapper'.
+    """
 
     @wraps(wrapped=func)
     def wrapper(algorithm: str, **kwargs) -> None:
-        # FIXME: Funções tem que retornar as métricas........
+        """Calcula o tempo de execução de algum algoritmo de busca.
+
+        Parameters
+        ----------
+        algorithm : str
+            O nome do algoritmo de busca a ser executado.
+        """
+        start_time: float = time()
         func(algorithm, **kwargs)
-        print("TODO: Métricas")
+        execution_time: float = time() - start_time
+        print(
+            f'[Tempo de Execução] O algoritmo \'{algorithm}\'' +\
+            f' levou {execution_time:.4f} segundos.'
+        )
 
     return wrapper
 
@@ -67,6 +91,17 @@ def execute(algorithm: str, **kwargs) -> None:
     if any(param not in expected_params for param in kwargs):
         raise InvalidParam(
             f'Está faltando parâmetros para o algoritmo {algorithm}.'
+        )
+
+    # Valida o TTL.
+    if kwargs['ttl'].isdigit(): # Se for um dígito, converte para inteiro.
+        kwargs['ttl'] = int(kwargs['ttl'])
+    elif not kwargs['ttl']: # Usa um valor padrão (-1), se nada for fornecido.
+        kwargs['ttl'] = float('inf')
+    # Lança uma exceção se o TTL não for um dígito.
+    else:
+        raise InvalidParam(
+            f'O valor \'{kwargs["ttl"]}\'fornecido para o TTL é inválido.'
         )
 
     # Executa o algoritmo de busca.
