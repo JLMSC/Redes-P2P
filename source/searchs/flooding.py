@@ -48,12 +48,14 @@ def flooding(node: Any, resource: str, ttl: int) -> None:
         neighbors: set[Any] = current_node.neighbors
         for neighbor in neighbors:
             # Ignora os nós já visitados e que tenham TTL > 0
-            if neighbor not in visited_nodes and current_ttl > 0:
-                queue.append(
-                    (neighbor, current_ttl - 1, current_path + [neighbor])
-                )
-                visited_nodes.add(neighbor)
+            if current_ttl > 0:
                 messages_count += 1
+                if neighbor not in visited_nodes and current_ttl > 0:
+                    queue.append(
+                        (neighbor, current_ttl - 1, current_path + [neighbor])
+                    )
+                    visited_nodes.add(neighbor)
+                    # messages_count += 1
 
     # Caso o recurso não seja encontrado.
     if not resource_found:

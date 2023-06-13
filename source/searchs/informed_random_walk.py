@@ -71,28 +71,29 @@ def informed_random_walk(node: Any, resource: str, ttl: int) -> None:
 
         for neighbor in random_neighbors:
             # Ignora os nós já visitados e que tenham TTL > 0
-            if neighbor not in visited_nodes and ttl > 0:
+            if ttl > 0:
                 messages_count += 1
-                # Vai direto para o nó que tem o recurso.
-                if neighbor.know_resource(resource=resource):
-                    # O nó que contém o recurso (cache).
-                    target_node: Any = neighbor.get_node_by_resource(
-                        resource=resource
-                    )
-                    recursive_informed_walk(
-                        node=target_node,
-                        resource=resource,
-                        ttl=ttl - 1,
-                        path=path + [target_node]
-                    )
-                # Caso contrário, visita, aleatoriamente, os vizinhos.
-                else:
-                    recursive_informed_walk(
-                        node=neighbor,
-                        resource=resource,
-                        ttl=ttl - 1,
-                        path=path + [neighbor]
-                    )
+                if neighbor not in visited_nodes:
+                    # Vai direto para o nó que tem o recurso.
+                    if neighbor.know_resource(resource=resource):
+                        # O nó que contém o recurso (cache).
+                        target_node: Any = neighbor.get_node_by_resource(
+                            resource=resource
+                        )
+                        recursive_informed_walk(
+                            node=target_node,
+                            resource=resource,
+                            ttl=ttl - 1,
+                            path=path + [target_node]
+                        )
+                    # Caso contrário, visita, aleatoriamente, os vizinhos.
+                    else:
+                        recursive_informed_walk(
+                            node=neighbor,
+                            resource=resource,
+                            ttl=ttl - 1,
+                            path=path + [neighbor]
+                        )
 
     recursive_informed_walk(node=node, resource=resource, ttl=ttl, path=[node])
 

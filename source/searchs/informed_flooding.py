@@ -50,24 +50,25 @@ def informed_flooding(node: Any, resource: str, ttl: int) -> None:
         neighbors: set[Any] = current_node.neighbors
         for neighbor in neighbors:
             # Ignora os nós já visitados e que tenham TTL > 0
-            if neighbor not in visited_nodes and current_ttl > 0:
+            if current_ttl > 0:
                 messages_count += 1
-                visited_nodes.add(neighbor)
-                if neighbor.know_resource(resource=resource):
-                    # O nó que contém o recurso (cache).
-                    target_node: Any = neighbor.get_node_by_resource(
-                        resource=resource
-                    )
-                    queue.insert(
-                        0,
-                        (target_node, 0, current_path + [target_node])
-                    )
-                    visited_nodes.add(target_node)
-                    break
-                else:
-                    queue.append(
-                        (neighbor, current_ttl - 1, current_path + [neighbor])
-                    )
+                if neighbor not in visited_nodes:
+                    visited_nodes.add(neighbor)
+                    if neighbor.know_resource(resource=resource):
+                        # O nó que contém o recurso (cache).
+                        target_node: Any = neighbor.get_node_by_resource(
+                            resource=resource
+                        )
+                        queue.insert(
+                            0,
+                            (target_node, 0, current_path + [target_node])
+                        )
+                        visited_nodes.add(target_node)
+                        break
+                    else:
+                        queue.append(
+                            (neighbor, current_ttl - 1, current_path + [neighbor])
+                        )
 
     # Caso o recurso não seja encontrado.
     if not resource_found:

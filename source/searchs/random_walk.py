@@ -68,14 +68,15 @@ def random_walk(node: Any, resource: str, ttl: int) -> None:
 
         for neighbor in random_neighbors:
             # Ignora os nós já visitados e que tenham TTL > 0
-            if neighbor not in visited_nodes and ttl > 0:
+            if ttl > 0:
                 messages_count += 1
-                recursive_walk(
-                    node=neighbor,
-                    resource=resource,
-                    ttl=ttl - 1,
-                    path=path + [neighbor]
-                )
+                if neighbor not in visited_nodes:
+                    recursive_walk(
+                        node=neighbor,
+                        resource=resource,
+                        ttl=ttl - 1,
+                        path=path + [neighbor]
+                    )
 
     recursive_walk(node=node, resource=resource, ttl=ttl, path=[node])
 
